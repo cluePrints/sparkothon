@@ -1,5 +1,6 @@
 import argparse
 import random
+import sys
 
 VALID = 0
 INVALID = 1
@@ -28,13 +29,16 @@ class ThermostatSimulator:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n_thermostats", required=True, help="number of thermostats to simulate", type=int)
-    parser.add_argument("-n_ticks",       required=True, help="number of ticks to simulate", type=int)
-    parser.add_argument("-output_name",   required=True, help="file name to write the output to")
+    parser.add_argument("-n_thermostats", required=True,  help="number of thermostats to simulate", type=int)
+    parser.add_argument("-n_ticks",       required=True,  help="number of ticks to simulate", type=int)
+    parser.add_argument("-output_name",   required=False, help="file name to write the output to. System out by default")
 
     args = parser.parse_args()
 
-    f = open(args.output_name, 'a')
+    f = None 
+    if (args.output_name):
+        f = open(args.output_name, 'a')
+        sys.stdout = f
     simulators = []
     for i in range(0, args.n_thermostats):
         simulators.append(ThermostatSimulator())
@@ -46,6 +50,7 @@ if __name__ == "__main__":
             simulator.tick()
             value = simulator.read_value()
             row.append(str(value) if value else 'None')
-        f.write(','.join(row))
-        f.write("\n")
-    f.close()
+        print(','.join(row))
+
+    if f:
+        f.close()
